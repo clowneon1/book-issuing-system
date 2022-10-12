@@ -83,6 +83,15 @@ public class BookController {
         return new ResponseEntity<>(bookService.userToSection(userSection),HttpStatus.OK);
     }
 
+    /*-----------------------------------------------------------*/
+
+    //Put mapping categories
+
+    @PutMapping("/books/{bid}/categories/{cid}")
+    public ResponseEntity<Book> putCategory(@PathVariable long bid, @PathVariable long cid){
+        return new ResponseEntity<>(bookService.putCategory(bid,cid),HttpStatus.OK);
+    }
+
     @PutMapping("/books/{id}")
     public ResponseEntity<Book> updateBook(@PathVariable("id") long id, @RequestBody Book bookRequest) {
         return new ResponseEntity<>(bookService.updateBook(id,bookRequest), HttpStatus.OK);

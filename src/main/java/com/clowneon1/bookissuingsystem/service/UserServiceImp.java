@@ -18,11 +18,12 @@ import java.util.Map;
 @Service
 public class UserServiceImp implements UserService{
 
+    @Autowired
     private UserRepository userRepository;
 
-    public UserServiceImp(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+//    public UserServiceImp(UserRepository userRepository) {
+//        this.userRepository = userRepository;
+//    }
 
     @Override
     public List<User> getAllUsers() {

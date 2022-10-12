@@ -21,8 +21,8 @@ public interface BookService {
     public void deleteBook(long id);
     public void deleteAllBooksOfUser(Long userId);
     public void deleteAllBooksOfSection(Long sectionId);
-
     public Book sectionToUser(UserSection userSection);
     public Book userToSection(UserSection userSection);
+    public Book putCategory(long bid, long cid);
 
 }

@@ -2,27 +2,37 @@ package com.clowneon1.bookissuingsystem.service;
 
 import com.clowneon1.bookissuingsystem.exception.ResourceNotFoundException;
 import com.clowneon1.bookissuingsystem.model.Book;
+import com.clowneon1.bookissuingsystem.model.Category;
 import com.clowneon1.bookissuingsystem.model.UserSection;
 import com.clowneon1.bookissuingsystem.repository.BookRepository;
+import com.clowneon1.bookissuingsystem.repository.CategoryRepository;
 import com.clowneon1.bookissuingsystem.repository.SectionRepository;
 import com.clowneon1.bookissuingsystem.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class BookServiceImp implements BookService{
 
+    @Autowired
     private BookRepository bookRepository;
+    @Autowired
     private UserRepository userRepository;
-
+    @Autowired
     private SectionRepository sectionRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
-    public BookServiceImp(BookRepository bookRepository, UserRepository userRepository, SectionRepository sectionRepository) {
-        this.bookRepository = bookRepository;
-        this.userRepository = userRepository;
-        this.sectionRepository = sectionRepository;
-    }
+//    public BookServiceImp(BookRepository bookRepository, UserRepository userRepository, SectionRepository sectionRepository, CategoryRepository categoryRepository) {
+//        this.bookRepository = bookRepository;
+//        this.userRepository = userRepository;
+//        this.sectionRepository = sectionRepository;
+//        this.categoryRepository = categoryRepository;
+//    }
 
     @Override
     public List<Book> getAllBooks() {
@@ -53,6 +63,8 @@ public class BookServiceImp implements BookService{
 
     @Override
     public Book createBookInUser(Long id, Book bookRequest) {
+//        Book _book = bookRepository.save(bookRequest);
+//        return mapUserToBook(_book.getId(),id);
         Book book = userRepository.findById(id).map(user -> {
             bookRequest.setUser(user);
             return bookRepository.save(bookRequest);
@@ -135,6 +147,30 @@ public class BookServiceImp implements BookService{
             book.setSection(section);
             return bookRepository.save(book);
         }).orElseThrow(() -> new ResourceNotFoundException("Not found Section with id = " + userSection.getSectionId()));
+        return bookRepository.save(book);
+    }
+
+    @Override
+    public Book putCategory(long bid, long cid) {
+        Set<Category> categorySet = null;
+        Book book = bookRepository.findById(bid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found Book with id = " + bid));
+        Category category = categoryRepository.findById(cid)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found category with id = " + cid));
+        categorySet = book.getCategories();
+        categorySet.add(category);
+        book.setCategories(categorySet);
+        return bookRepository.save(book);
+    }
+
+    private Book mapUserToBook(Long bookId, long userId){
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found Book with id = " + bookId));
+        Book _book = userRepository.findById(userId).map(user -> {
+            book.setUser(user);
+            return bookRepository.save(book);
+        }).orElseThrow(() -> new ResourceNotFoundException("Not found User with id = " + userId));
+
         return bookRepository.save(book);
     }
 }
