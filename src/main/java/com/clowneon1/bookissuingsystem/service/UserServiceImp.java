@@ -7,10 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserServiceImp implements UserService{
@@ -56,5 +59,18 @@ public class UserServiceImp implements UserService{
     @Override
     public void deleteAllUsers() {
         userRepository.deleteAll();
+    }
+
+    @Override
+    public User patchUser(Long userId, Map<Object, Object> fields) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found User with id = " + userId));
+
+        fields.forEach((k,v) ->{
+            Field field = ReflectionUtils.findField(User.class, (String) k);
+            field.setAccessible(true);
+            ReflectionUtils.setField(field, user, v);
+        });
+        return userRepository.save(user);
     }
 }

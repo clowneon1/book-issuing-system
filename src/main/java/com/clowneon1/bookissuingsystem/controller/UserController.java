@@ -11,9 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("api/v3")
@@ -44,6 +42,11 @@ public class UserController {
     @PutMapping("/users/{id}")
     public ResponseEntity<User> updateUser(@PathVariable("id") long userId, @RequestBody User userDetails){
        return new ResponseEntity<>(userService.updateUser(userId,userDetails),HttpStatus.OK);
+    }
+
+    @PatchMapping("/users/{id}")
+    public ResponseEntity<User> patchUser(@PathVariable("id") long userId, @RequestBody Map<Object,Object> fields){
+        return new ResponseEntity<>(userService.patchUser(userId,fields),HttpStatus.OK);
     }
 
     @DeleteMapping("/users/{id}")
