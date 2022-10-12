@@ -76,6 +76,8 @@ public class BookServiceImp implements BookService{
 
         book.setTitle(bookRequest.getTitle());
         book.setDescription(bookRequest.getDescription());
+        book.setPublishDate(bookRequest.getPublishDate());
+        book.setIssueDate(bookRequest.getIssueDate());
         return bookRepository.save(book);
     }
 
@@ -110,11 +112,12 @@ public class BookServiceImp implements BookService{
         Book book = bookRepository.findById(userSection.getBookId())
                 .orElseThrow(() -> new ResourceNotFoundException("Not found Book with id = " + userSection.getBookId()));
         book.setSection(null);
-
+        book.setIssueDate(userSection.getIssueDate());
         Book _book = userRepository.findById(userSection.getUserId()).map(user -> {
             book.setUser(user);
             return bookRepository.save(book);
         }).orElseThrow(() -> new ResourceNotFoundException("Not found User with id = " + userSection.getUserId()));
+
         return bookRepository.save(book);
     }
 
@@ -127,7 +130,7 @@ public class BookServiceImp implements BookService{
         Book book = bookRepository.findById(userSection.getBookId())
                 .orElseThrow(() -> new ResourceNotFoundException("Not found Book with id = " + userSection.getBookId()));
         book.setUser(null);
-
+        book.setIssueDate(userSection.getIssueDate());
         Book _book = sectionRepository.findById(userSection.getSectionId()).map(section -> {
             book.setSection(section);
             return bookRepository.save(book);

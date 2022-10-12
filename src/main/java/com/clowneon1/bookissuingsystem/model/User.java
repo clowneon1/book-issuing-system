@@ -20,4 +20,10 @@ public class User {
 
     @Column(name = "full_name")
     private String fullName;
+
+    @Column(name = "phone_no")
+    private String phoneNo;
+
+    @Column(name = "email")
+    private String email;
 }

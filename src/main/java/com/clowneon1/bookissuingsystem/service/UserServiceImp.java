@@ -43,6 +43,8 @@ public class UserServiceImp implements UserService{
                 .orElseThrow(() -> new ResourceNotFoundException("Not found User with id = " + userId));
 
         user.setFullName(userDetails.getFullName());
+        user.setPhoneNo(userDetails.getPhoneNo());
+        user.setEmail(userDetails.getEmail());
         return userRepository.save(user);
     }
 

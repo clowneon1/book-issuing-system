@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @NoArgsConstructor
 @Setter
@@ -25,6 +26,12 @@ public class Book {
 
     @Column(name = "book_description")
     private String description;
+
+    @Column(name = "publish_date")
+    private Date publishDate;
+
+    @Column(name = "issued_on")
+    private Date issueDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
