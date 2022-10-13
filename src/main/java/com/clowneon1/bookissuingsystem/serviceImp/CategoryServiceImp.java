@@ -1,9 +1,10 @@
-package com.clowneon1.bookissuingsystem.service;
+package com.clowneon1.bookissuingsystem.serviceImp;
 
 import com.clowneon1.bookissuingsystem.exception.ResourceNotFoundException;
 import com.clowneon1.bookissuingsystem.model.Book;
 import com.clowneon1.bookissuingsystem.model.Category;
 import com.clowneon1.bookissuingsystem.repository.CategoryRepository;
+import com.clowneon1.bookissuingsystem.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,14 +12,13 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class CategoryServiceImp implements CategoryService{
+public class CategoryServiceImp implements CategoryService {
 
-    @Autowired
     private CategoryRepository categoryRepository;
 
-//    public CategoryServiceImp(CategoryRepository categoryRepository) {
-//        this.categoryRepository = categoryRepository;
-//    }
+    public CategoryServiceImp(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
     @Override
     public List<Category> getAllCategories() {

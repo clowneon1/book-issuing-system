@@ -1,4 +1,4 @@
-package com.clowneon1.bookissuingsystem.service;
+package com.clowneon1.bookissuingsystem.serviceImp;
 
 import com.clowneon1.bookissuingsystem.exception.ResourceNotFoundException;
 import com.clowneon1.bookissuingsystem.model.Book;
@@ -8,6 +8,7 @@ import com.clowneon1.bookissuingsystem.repository.BookRepository;
 import com.clowneon1.bookissuingsystem.repository.CategoryRepository;
 import com.clowneon1.bookissuingsystem.repository.SectionRepository;
 import com.clowneon1.bookissuingsystem.repository.UserRepository;
+import com.clowneon1.bookissuingsystem.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,23 +17,19 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class BookServiceImp implements BookService{
+public class BookServiceImp implements BookService {
 
-    @Autowired
     private BookRepository bookRepository;
-    @Autowired
     private UserRepository userRepository;
-    @Autowired
     private SectionRepository sectionRepository;
-    @Autowired
     private CategoryRepository categoryRepository;
 
-//    public BookServiceImp(BookRepository bookRepository, UserRepository userRepository, SectionRepository sectionRepository, CategoryRepository categoryRepository) {
-//        this.bookRepository = bookRepository;
-//        this.userRepository = userRepository;
-//        this.sectionRepository = sectionRepository;
-//        this.categoryRepository = categoryRepository;
-//    }
+    public BookServiceImp(BookRepository bookRepository, UserRepository userRepository, SectionRepository sectionRepository, CategoryRepository categoryRepository) {
+        this.bookRepository = bookRepository;
+        this.userRepository = userRepository;
+        this.sectionRepository = sectionRepository;
+        this.categoryRepository = categoryRepository;
+    }
 
     @Override
     public List<Book> getAllBooks() {

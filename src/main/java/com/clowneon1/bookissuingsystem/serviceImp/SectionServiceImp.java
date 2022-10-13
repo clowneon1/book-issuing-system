@@ -1,8 +1,9 @@
-package com.clowneon1.bookissuingsystem.service;
+package com.clowneon1.bookissuingsystem.serviceImp;
 
 import com.clowneon1.bookissuingsystem.exception.ResourceNotFoundException;
 import com.clowneon1.bookissuingsystem.model.Section;
 import com.clowneon1.bookissuingsystem.repository.SectionRepository;
+import com.clowneon1.bookissuingsystem.service.SectionService;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,14 +12,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import java.util.List;
 
 @Service
-public class SectionServiceImp implements SectionService{
+public class SectionServiceImp implements SectionService {
 
-    @Autowired
+
     private SectionRepository sectionRepository;
 
-//    public SectionServiceImp(SectionRepository sectionRepository) {
-//        this.sectionRepository = sectionRepository;
-//    }
+    public SectionServiceImp(SectionRepository sectionRepository) {
+        this.sectionRepository = sectionRepository;
+    }
 
     @Override
     public List<Section> getAllSections() {

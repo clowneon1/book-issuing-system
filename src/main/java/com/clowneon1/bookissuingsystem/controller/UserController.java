@@ -1,12 +1,7 @@
 package com.clowneon1.bookissuingsystem.controller;
 
-import com.clowneon1.bookissuingsystem.exception.ResourceNotFoundException;
-import com.clowneon1.bookissuingsystem.model.Book;
 import com.clowneon1.bookissuingsystem.model.User;
-import com.clowneon1.bookissuingsystem.repository.UserRepository;
 import com.clowneon1.bookissuingsystem.service.UserService;
-import com.clowneon1.bookissuingsystem.service.UserServiceImp;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

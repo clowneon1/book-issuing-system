@@ -1,8 +1,9 @@
-package com.clowneon1.bookissuingsystem.service;
+package com.clowneon1.bookissuingsystem.serviceImp;
 
 import com.clowneon1.bookissuingsystem.exception.ResourceNotFoundException;
 import com.clowneon1.bookissuingsystem.model.User;
 import com.clowneon1.bookissuingsystem.repository.UserRepository;
+import com.clowneon1.bookissuingsystem.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +17,13 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class UserServiceImp implements UserService{
+public class UserServiceImp implements UserService {
 
-    @Autowired
     private UserRepository userRepository;
 
-//    public UserServiceImp(UserRepository userRepository) {
-//        this.userRepository = userRepository;
-//    }
+    public UserServiceImp(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public List<User> getAllUsers() {
