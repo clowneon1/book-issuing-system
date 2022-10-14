@@ -47,9 +47,17 @@ public class CategoryServiceImp implements CategoryService {
     }
 
     @Override
-    public Set<Book> getBookByCategoryId(long id) {
+    public Set<Book> getBooksByCategoryId(long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id :: " + id));
         return category.getBooks();
+    }
+
+    @Override
+    public Category updateCategory(long id, Category categoryRequest) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id :: " + id));
+        category.setCategoryName(categoryRequest.getCategoryName());
+        return categoryRepository.save(category);
     }
 }

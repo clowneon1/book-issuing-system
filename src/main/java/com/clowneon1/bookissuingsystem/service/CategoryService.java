@@ -14,5 +14,7 @@ public interface CategoryService {
 
     public Category createCategory(Category category);
 
-    Set<Book> getBookByCategoryId(long id);
+    Set<Book> getBooksByCategoryId(long id);
+
+    Category updateCategory(long id, Category categoryRequest);
 }

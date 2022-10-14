@@ -56,5 +56,4 @@ public class UserController {
         return new ResponseEntity<>("All users deleted",HttpStatus.OK);
     }
 
-
 }

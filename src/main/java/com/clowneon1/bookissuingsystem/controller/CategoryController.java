@@ -22,7 +22,7 @@ public class CategoryController {
 
     @PostMapping("/categories")
     public ResponseEntity<Category> createCategory(@RequestBody Category categoryRequest){
-        return new ResponseEntity<>(categoryService.createCategory(categoryRequest),HttpStatus.OK);
+        return new ResponseEntity<>(categoryService.createCategory(categoryRequest),HttpStatus.CREATED);
     }
 
     @GetMapping("/categories")
@@ -32,7 +32,7 @@ public class CategoryController {
 
     @GetMapping("/categories/{id}/books")
     public ResponseEntity<Set<Book>> getBookByCategoryId(@PathVariable long id){
-        return new ResponseEntity<>(categoryService.getBookByCategoryId(id),HttpStatus.OK);
+        return new ResponseEntity<>(categoryService.getBooksByCategoryId(id),HttpStatus.OK);
     }
 
 
@@ -45,6 +45,11 @@ public class CategoryController {
     public ResponseEntity<String> deleteCategoryById(@PathVariable("id") long id){
         categoryService.deleteCategory(id);
         return new ResponseEntity<>("category deleted",HttpStatus.OK);
+    }
+
+    @PutMapping("/categories/{id}")
+    public ResponseEntity<Category> updateCategory(@PathVariable long id, @RequestBody Category categoryRequest){
+        return new ResponseEntity<>(categoryService.updateCategory(id, categoryRequest),HttpStatus.OK);
     }
 
     @DeleteMapping("/categories")
