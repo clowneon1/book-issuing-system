@@ -159,15 +159,4 @@ public class BookServiceImp implements BookService {
         book.setCategories(categorySet);
         return bookRepository.save(book);
     }
-
-    private Book mapUserToBook(Long bookId, long userId){
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new ResourceNotFoundException("Not found Book with id = " + bookId));
-        Book _book = userRepository.findById(userId).map(user -> {
-            book.setUser(user);
-            return bookRepository.save(book);
-        }).orElseThrow(() -> new ResourceNotFoundException("Not found User with id = " + userId));
-
-        return bookRepository.save(book);
-    }
 }
