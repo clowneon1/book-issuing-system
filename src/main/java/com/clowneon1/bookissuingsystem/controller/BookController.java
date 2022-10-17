@@ -46,9 +46,9 @@ public class BookController {
     }
 
     @DeleteMapping("/users/{id}/books")
-    public ResponseEntity<List<Book>> deleteAllBooksOfUser(@PathVariable(value = "id") Long userId) {
+    public ResponseEntity<String> deleteAllBooksOfUser(@PathVariable(value = "id") Long userId) {
         bookService.deleteAllBooksOfUser(userId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("All books of user deleted",HttpStatus.OK);
     }
     /*------------------------------------------------------- */
 
@@ -64,9 +64,9 @@ public class BookController {
     }
 
     @DeleteMapping("/sections/{id}/books")
-    public ResponseEntity<List<Book>> deleteAllBooksOfSection(@PathVariable(value = "id") Long sectionId) {
+    public ResponseEntity<String> deleteAllBooksOfSection(@PathVariable(value = "id") Long sectionId) {
         bookService.deleteAllBooksOfSection(sectionId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("All books of section deleted",HttpStatus.OK);
     }
 
     /*-------------------------------------------------------*/
