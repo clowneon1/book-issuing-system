@@ -42,7 +42,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/categories/{id}")
-    public ResponseEntity<String> deleteCategoryById(@PathVariable("id") long id){
+    public ResponseEntity<String> deleteAllCategories(@PathVariable("id") long id){
         categoryService.deleteCategory(id);
         return new ResponseEntity<>("category deleted",HttpStatus.OK);
     }
@@ -53,7 +53,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/categories")
-    public ResponseEntity<String> deleteCategoryById(){
+    public ResponseEntity<String> deleteAllCategories(){
         categoryService.deleteAllCategories();
         return new ResponseEntity<>("All category deleted",HttpStatus.OK);
     }
