@@ -7,9 +7,9 @@ import com.clowneon1.bookissuingsystem.repository.CategoryRepository;
 import com.clowneon1.bookissuingsystem.serviceImp.CategoryServiceImp;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -31,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
 public class CategoryServiceImpTest {
 
     private MockMvc mockMvc;
@@ -46,7 +45,7 @@ public class CategoryServiceImpTest {
     @InjectMocks
     private CategoryServiceImp categoryServiceImp;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(categoryServiceImp).build();

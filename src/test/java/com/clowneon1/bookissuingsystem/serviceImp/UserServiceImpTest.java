@@ -9,9 +9,10 @@ import com.clowneon1.bookissuingsystem.repository.UserRepository;
 import com.clowneon1.bookissuingsystem.serviceImp.CategoryServiceImp;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -36,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
 public class UserServiceImpTest {
 
     private MockMvc mockMvc;
@@ -47,7 +47,7 @@ public class UserServiceImpTest {
     @InjectMocks
     private UserServiceImp userServiceImp;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(userServiceImp).build();
