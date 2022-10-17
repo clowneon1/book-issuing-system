@@ -4,6 +4,9 @@ import com.clowneon1.bookissuingsystem.model.Section;
 import com.clowneon1.bookissuingsystem.model.User;
 import com.clowneon1.bookissuingsystem.model.UserSection;
 import com.clowneon1.bookissuingsystem.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -11,23 +14,27 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.nio.charset.Charset;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class UserControllerTest {
     
     private MockMvc mockMvc;
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    ObjectWriter objectWriter = objectMapper.writer();
     
     @Mock
     UserService userService;
@@ -73,15 +80,64 @@ class UserControllerTest {
     }
 
     @Test
-    public void createUser() {
+    public void createUser() throws Exception {
+
+        User record = User.builder().id(4L).fullName("yash").email("yash@gmail.com").phoneNo("+91 2323232323").build();
+
+        String content = objectWriter.writeValueAsString(record);
+
+        when(userService.createUser(record)).thenReturn(record);
+
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/api/v3/users")
+                .characterEncoding(Charset.defaultCharset())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(content);
+
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isCreated());
     }
 
     @Test
-    public void updateUser() {
+    public void updateUser() throws Exception {
+
+        User record = User.builder().id(1L).fullName("yash").email("yash@gmail.com").phoneNo("+91 2323232323").build();
+
+        String content = objectWriter.writeValueAsString(record);
+
+        when(userService.updateUser(1L,record)).thenReturn(record);
+
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/api/v3/users/1")
+                .characterEncoding(Charset.defaultCharset())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(content);
+
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isOk());
     }
 
     @Test
-    public void patchUser() {
+    public void patchUser() throws Exception {
+        Map<Object,Object> fields = new HashMap<>();
+
+        fields.put("firstName", "yash");
+
+        String content = objectWriter.writeValueAsString(fields);
+
+        when(userService.patchUser(1L,fields)).thenReturn(u1);
+
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.patch("/api/v3/users/1")
+                .characterEncoding(Charset.defaultCharset())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(content);
+
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$",notNullValue()))
+                .andExpect(jsonPath("$.fullName",is(u1.getFullName())));
     }
 
     @Test

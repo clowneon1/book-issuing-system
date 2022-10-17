@@ -1,5 +1,6 @@
 package com.clowneon1.bookissuingsystem.controller;
 
+import com.clowneon1.bookissuingsystem.model.Book;
 import com.clowneon1.bookissuingsystem.model.Category;
 import com.clowneon1.bookissuingsystem.service.CategoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,10 +20,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,7 +55,7 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void getAllCategories_success() throws Exception{
+    public void getAllCategories() throws Exception{
         List<Category> records = new ArrayList<>(Arrays.asList(c1,c2,c3));
 
         when(categoryService.getAllCategories()).thenReturn(records);
@@ -79,13 +82,12 @@ public class CategoryControllerTest {
     }
 
     @Test
-    public void createCategory_success() throws Exception{
+    public void createCategory() throws Exception{
         Category record = Category.builder()
                 .id(1L)
                 .categoryName("record")
                 .build();
 
-        //String str = "{\"categoryName\":\"record\"}";
         String content = objectWriter.writeValueAsString(record);
         when(categoryService.createCategory(record)).thenReturn(record);
 
@@ -95,18 +97,12 @@ public class CategoryControllerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .content(content);
 
-//        String str = mockMvc.perform(mockRequest).andReturn().getRequest().getContentAsString();
-//        System.out.println("lklklklklklkl" + str);
-
         mockMvc.perform(mockRequest)
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.categoryName", is(record.getCategoryName())));
+                .andExpect(status().isCreated());
     }
 
     @Test
-    public void updateCategory_success() throws Exception{
+    public void updateCategory() throws Exception{
         Category updatedRecord = new Category(1L, "updated", null);
         when(categoryService.createCategory(updatedRecord)).thenReturn(updatedRecord);
 
@@ -118,9 +114,43 @@ public class CategoryControllerTest {
                 .content(updatedContent);
 
         mockMvc.perform(mockRequest)
-                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void deleteCategory() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/api/v3/categories/1")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$.categoryName", is(updatedRecord.getCategoryName())));
+                .equals("category deleted");
+
+        verify(categoryService, times(1)).deleteCategory(anyLong());
     }
+
+    @Test
+    public void getBookByCategoryId() throws Exception {
+        Book b1 = Book.builder().id(1L).title("book1").description("dec1")
+                .publishDate(new Date(2022-02-10)).build();
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/api/v3/categories/1/books"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", notNullValue()))
+                .equals(b1);
+    }
+
+    @Test
+    public void deleteAllCategory() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/api/v3/categories")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", notNullValue()))
+                .equals("category deleted");
+
+        verify(categoryService, times(1)).deleteAllCategories();
+    }
+
 }

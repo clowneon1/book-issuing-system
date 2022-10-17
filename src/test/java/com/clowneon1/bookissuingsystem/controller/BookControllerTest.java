@@ -1,9 +1,6 @@
 package com.clowneon1.bookissuingsystem.controller;
 
-import com.clowneon1.bookissuingsystem.model.Book;
-import com.clowneon1.bookissuingsystem.model.Section;
-import com.clowneon1.bookissuingsystem.model.User;
-import com.clowneon1.bookissuingsystem.model.UserSection;
+import com.clowneon1.bookissuingsystem.model.*;
 import com.clowneon1.bookissuingsystem.service.BookService;
 import com.clowneon1.bookissuingsystem.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,13 +12,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.nio.charset.Charset;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -106,7 +102,22 @@ class BookControllerTest {
     }
 
     @Test
-    public void createBookInUser() {
+    public void createBookInUser() throws Exception {
+        Book record = Book.builder().id(1L).title("book1").description("dec1")
+                .publishDate(new Date(2022-02-10)).user(u1).build();
+
+        String content = objectWriter.writeValueAsString(record);
+
+        when(bookService.createBookInUser(1L,record)).thenReturn(record);
+
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/api/v3/users/1/books")
+                .characterEncoding(Charset.defaultCharset())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(content);
+
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -136,7 +147,22 @@ class BookControllerTest {
     }
 
     @Test
-    public void createBookInSection() {
+    public void createBookInSection() throws Exception {
+        Book record = Book.builder().id(1L).title("book1").description("dec1")
+                .publishDate(new Date(2022-02-10)).section(s1).build();
+
+        String content = objectWriter.writeValueAsString(record);
+
+        when(bookService.createBookInSection(1L,record)).thenReturn(record);
+
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/api/v3/sections/1/books")
+                .characterEncoding(Charset.defaultCharset())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(content);
+
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -166,23 +192,66 @@ class BookControllerTest {
                         .put("/api/v3/section-to-user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(content))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void userToSection() throws Exception {
+        Book record = Book.builder().id(1L).title("book1").description("dec1")
+                .publishDate(new Date(2022-02-10)).user(u1).build();
+
+        UserSection userSection = UserSection.builder().userId(1L).bookId(1L).sectionId(1L).build();
+
+        when(bookService.userToSection(userSection)).thenReturn(record);
+
+        String content = objectWriter.writeValueAsString(userSection);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/api/v3/user-to-section")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void putCategory() throws Exception {
+        Set<Category> categories = new HashSet<>();
+        Category c1 = new Category(1L, "c1",null);
+        Category c2 = new Category(2L, "c2",null);
+        Category c3 = new Category(3L, "c3",null);
+        categories.addAll(Arrays.asList(c1,c2,c3));
+
+        Book record = Book.builder().id(1L).title("book1").description("dec1")
+                .publishDate(new Date(2022-02-10)).section(s1).categories(categories).build();
+        when(bookService.putCategory(1L,1L)).thenReturn(record);
+
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/api/v3/books/1/categories/1")
+                .characterEncoding(Charset.defaultCharset())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(mockRequest)
                 .andExpect(status().isOk())
-                .andDo(print())
-                .andExpect(jsonPath("$", notNullValue()))
-                .equals(record);
-
+                .andExpect(jsonPath("$", notNullValue()));
     }
 
     @Test
-    public void userToSection() {
-    }
+    public void updateBook() throws Exception {
+        Book record = Book.builder().id(1L).title("book1").description("dec1")
+                .publishDate(new Date(2022-02-10)).build();
 
-    @Test
-    public void putCategory() {
-    }
+        String content = objectWriter.writeValueAsString(record);
 
-    @Test
-    public void updateBook() {
+        when(bookService.updateBook(1L,record)).thenReturn(record);
+
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/api/v3/books/1")
+                .characterEncoding(Charset.defaultCharset())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(content);
+
+        mockMvc.perform(mockRequest)
+                .andExpect(status().isOk());
     }
 
     @Test
