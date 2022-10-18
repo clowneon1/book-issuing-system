@@ -14,6 +14,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -52,13 +54,13 @@ public class BookServiceImpTest {
     User u1 = User.builder().id(1L).fullName("yash").email("yash@gmail.com").phoneNo("+91 2323232323").build();
 
     Book b1 = Book.builder().id(1L).title("book1").description("dec1")
-            .publishDate(new Date(2022-02-10)).section(s1).build();
+            .publishDate(LocalDate.of(2022, Month.APRIL,01)).section(s1).build();
 
     Book b2 = Book.builder().id(2L).title("book2").description("dec2")
-            .publishDate(new Date(2022-02-10)).section(s1).build();
+            .publishDate(LocalDate.of(2022,Month.APRIL,01)).section(s1).build();
 
     Book b3 = Book.builder().id(1L).title("book1").description("dec1")
-            .publishDate(new Date(2022-02-10)).section(s1).build();
+            .publishDate(LocalDate.of(2022,Month.APRIL,01)).section(s1).build();
 
     @Test
     public void getAllBooks() {
@@ -104,7 +106,7 @@ public class BookServiceImpTest {
     @Test
     public void createBookInSection() {
         Book record = Book.builder().id(2L).title("book2").description("dec2")
-                .publishDate(new Date(2022-02-10)).section(s1).build();
+                .publishDate(LocalDate.of(2022,Month.APRIL,01)).section(s1).build();
 
         when(sectionRepository.findById(anyLong())).thenReturn(Optional.ofNullable(s1));
         when(bookRepository.save(record)).thenReturn(record);
@@ -144,9 +146,9 @@ public class BookServiceImpTest {
     @Test
     public void sectionToUser() {
         Book book = Book.builder().id(1L).user(u1).title("book1").description("description1")
-                .publishDate(new Date(2022-01-20)).issueDate(new Date(2022-01-02)).build();
+                .publishDate(LocalDate.of(2022,Month.APRIL,01)).issueDate(LocalDate.of(2022,Month.APRIL,01)).build();
         UserSection userSection = UserSection.builder().userId(1L).sectionId(1L).bookId(1L)
-                .issueDate(new Date(2022-01-02)).build();
+                .issueDate(LocalDate.of(2022,Month.APRIL,01)).build();
 
         when(sectionRepository.existsById(anyLong())).thenReturn(true);
         when(bookRepository.findById(anyLong())).thenReturn(Optional.ofNullable(book));
@@ -161,7 +163,7 @@ public class BookServiceImpTest {
     @Test
     public void userToSection() {
         Book book = Book.builder().id(1L).user(u1).title("book1").description("description1")
-                .publishDate(new Date(2022-01-20)).issueDate(new Date(2022-01-02)).build();
+                .publishDate(LocalDate.of(2022,Month.APRIL,01)).issueDate(LocalDate.of(2022,Month.APRIL,01)).build();
         UserSection userSection = UserSection.builder().userId(1L).sectionId(1L).bookId(1L)
                 .issueDate(null).build();
 
@@ -183,7 +185,7 @@ public class BookServiceImpTest {
         Set<Category> categorySet = new HashSet<>();
         categorySet.add(category);
         Book book = Book.builder().id(1L).user(u1).title("book1").description("description1")
-                .publishDate(new Date(2022-01-20)).issueDate(new Date(2022-01-02)).categories(categorySet).build();
+                .publishDate(LocalDate.of(2022,Month.APRIL,01)).issueDate(LocalDate.of(2022,Month.APRIL,01)).categories(categorySet).build();
 
 
         when(bookRepository.findById(anyLong())).thenReturn(Optional.ofNullable(book));

@@ -17,7 +17,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.nio.charset.Charset;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.*;
+
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,23 +41,23 @@ class BookControllerTest {
     BookController bookController;
 
     ObjectMapper objectMapper = new ObjectMapper();
-    ObjectWriter objectWriter = objectMapper.writer();
 
     Section s1 = Section.builder().id(1L).sectionName("section1").build();
 
     User u1 = User.builder().id(1L).fullName("yash").email("yash@gmail.com").phoneNo("+91 2323232323").build();
 
     Book b1 = Book.builder().id(1L).title("book1").description("dec1")
-            .publishDate(new Date(2022-02-10)).section(s1).build();
+            .publishDate(LocalDate.of(2022,Month.APRIL,01)).section(s1).build();
 
     Book b2 = Book.builder().id(2L).title("book2").description("dec2")
-            .publishDate(new Date(2022-02-10)).section(s1).build();
+            .publishDate(LocalDate.of(2022,Month.APRIL,01)).section(s1).build();
 
     Book b3 = Book.builder().id(1L).title("book1").description("dec1")
-            .publishDate(new Date(2022-02-10)).section(s1).build();
+            .publishDate(LocalDate.of(2022,Month.APRIL,01)).section(s1).build();
     
     @BeforeEach
     public void setUp(){
+        objectMapper.findAndRegisterModules();
         MockitoAnnotations.initMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(bookController).build();
     }
@@ -102,22 +105,21 @@ class BookControllerTest {
     }
 
     @Test
-    public void createBookInUser() throws Exception {
-        Book record = Book.builder().id(1L).title("book1").description("dec1")
-                .publishDate(new Date(2022-02-10)).user(u1).build();
-
-        String content = objectWriter.writeValueAsString(record);
-
-        when(bookService.createBookInUser(1L,record)).thenReturn(record);
-
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/api/v3/users/1/books")
-                .characterEncoding(Charset.defaultCharset())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(content);
-
-        mockMvc.perform(mockRequest)
-                .andExpect(status().isCreated());
+    public void createBookInUsers_() throws Exception {
+        doReturn(b1).when(bookService).createBookInUser(any(), any());
+        String content = objectMapper.writeValueAsString(b1);
+        String value = "";
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/v3/users/1/books")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.title", is(b1.getTitle())))
+                .andExpect(jsonPath("$.description", is((b1.getDescription()))));
+//                .andReturn().getResponse().getContentAsString();
+//        System.out.println(value+"****");
     }
 
     @Test
@@ -127,7 +129,7 @@ class BookControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
-                .equals("All books of user deleted");
+                .andExpect(jsonPath("$", is("All books of user deleted")));
 
         verify(bookService, times(1)).deleteAllBooksOfUser(anyLong());
     }
@@ -148,21 +150,19 @@ class BookControllerTest {
 
     @Test
     public void createBookInSection() throws Exception {
-        Book record = Book.builder().id(1L).title("book1").description("dec1")
-                .publishDate(new Date(2022-02-10)).section(s1).build();
-
-        String content = objectWriter.writeValueAsString(record);
-
-        when(bookService.createBookInSection(1L,record)).thenReturn(record);
-
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/api/v3/sections/1/books")
-                .characterEncoding(Charset.defaultCharset())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(content);
-
-        mockMvc.perform(mockRequest)
-                .andExpect(status().isCreated());
+        doReturn(b1).when(bookService).createBookInSection(any(), any());
+        String content = objectMapper.writeValueAsString(b1);
+        String value = "";
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/v3/sections/1/books")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.title", is(b1.getTitle())))
+                .andExpect(jsonPath("$.description", is(b1.getDescription())));
+//                .andReturn().getResponse().getContentAsString();
     }
 
     @Test
@@ -172,45 +172,51 @@ class BookControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
-                .equals("All books of section deleted");
+                .andExpect(jsonPath("$",is("All books of section deleted")));
 
         verify(bookService, times(1)).deleteAllBooksOfSection(anyLong());
     }
 
     @Test
     public void sectionToUser() throws Exception{
-        Book record = Book.builder().id(1L).title("book1").description("dec1")
-                .publishDate(new Date(2022-02-10)).user(u1).issueDate(new Date(2022-02-01)).build();
+
+        Book record = Book.builder().id(1L).title("hb").description("dec1")
+                .publishDate(LocalDate.of(2022,Month.APRIL,01)).user(u1).issueDate(LocalDate.of(2022,Month.APRIL,01)).build();
 
         UserSection userSection = UserSection.builder().userId(1L).bookId(1L).sectionId(1L).build();
 
-        when(bookService.sectionToUser(userSection)).thenReturn(record);
+        doReturn(record).when(bookService).sectionToUser(any());
 
-        String content = objectWriter.writeValueAsString(userSection);
+        String content = objectMapper.writeValueAsString(userSection);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/v3/section-to-user")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
                         .content(content))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andExpect(jsonPath("$.title", is(record.getTitle())));
     }
 
     @Test
     public void userToSection() throws Exception {
-        Book record = Book.builder().id(1L).title("book1").description("dec1")
-                .publishDate(new Date(2022-02-10)).user(u1).build();
+        Book record = Book.builder().id(1L).title("hb").description("dec1")
+                .publishDate(LocalDate.of(2022,Month.APRIL,01)).section(s1).build();
 
         UserSection userSection = UserSection.builder().userId(1L).bookId(1L).sectionId(1L).build();
 
-        when(bookService.userToSection(userSection)).thenReturn(record);
+        doReturn(record).when(bookService).userToSection(any());
 
-        String content = objectWriter.writeValueAsString(userSection);
+        String content = objectMapper.writeValueAsString(userSection);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .put("/api/v3/user-to-section")
                         .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
                         .content(content))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title", is(record.getTitle())));
     }
 
     @Test
@@ -222,7 +228,7 @@ class BookControllerTest {
         categories.addAll(Arrays.asList(c1,c2,c3));
 
         Book record = Book.builder().id(1L).title("book1").description("dec1")
-                .publishDate(new Date(2022-02-10)).section(s1).categories(categories).build();
+                .publishDate(LocalDate.of(2022,Month.APRIL,01)).section(s1).categories(categories).build();
         when(bookService.putCategory(1L,1L)).thenReturn(record);
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/api/v3/books/1/categories/1")
@@ -232,26 +238,24 @@ class BookControllerTest {
 
         mockMvc.perform(mockRequest)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", notNullValue()));
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.title", is(record.getTitle())));
     }
 
     @Test
     public void updateBook() throws Exception {
-        Book record = Book.builder().id(1L).title("book1").description("dec1")
-                .publishDate(new Date(2022-02-10)).build();
-
-        String content = objectWriter.writeValueAsString(record);
-
-        when(bookService.updateBook(1L,record)).thenReturn(record);
-
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/api/v3/books/1")
-                .characterEncoding(Charset.defaultCharset())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(content);
-
-        mockMvc.perform(mockRequest)
-                .andExpect(status().isOk());
+        doReturn(b1).when(bookService).updateBook(anyLong(),any());
+        objectMapper.findAndRegisterModules();
+        String content = objectMapper.writeValueAsString(b1);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/api/v3/books/1")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.title", is(b1.getTitle())))
+                .andExpect(jsonPath("$.description", is(b1.getDescription())));
     }
 
     @Test
@@ -261,7 +265,7 @@ class BookControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
-                .equals("book deleted");
+                .andExpect(jsonPath("$", is("book deleted")));
 
         verify(bookService, times(1)).deleteBook(anyLong());
     }

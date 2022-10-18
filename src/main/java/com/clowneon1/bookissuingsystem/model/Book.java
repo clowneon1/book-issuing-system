@@ -8,9 +8,9 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.time.*;
 
 @NoArgsConstructor
 @Setter
@@ -32,10 +32,10 @@ public class Book {
     private String description;
 
     @Column(name = "publish_date")
-    private Date publishDate;
+    private LocalDate publishDate;
 
     @Column(name = "issued_on")
-    private Date issueDate;
+    private LocalDate issueDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

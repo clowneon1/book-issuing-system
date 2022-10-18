@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.nio.charset.Charset;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -132,7 +134,7 @@ public class CategoryControllerTest {
     @Test
     public void getBookByCategoryId() throws Exception {
         Book b1 = Book.builder().id(1L).title("book1").description("dec1")
-                .publishDate(new Date(2022-02-10)).build();
+                .publishDate(LocalDate.of(2022, Month.APRIL,01)).build();
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/v3/categories/1/books"))

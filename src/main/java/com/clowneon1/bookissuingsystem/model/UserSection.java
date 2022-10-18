@@ -2,7 +2,7 @@ package com.clowneon1.bookissuingsystem.model;
 
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -13,5 +13,5 @@ public class UserSection {
     private Long bookId;
     private Long userId;
     private Long sectionId;
-    private Date issueDate;
+    private LocalDate issueDate;
 }
