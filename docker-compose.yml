@@ -1,0 +1,19 @@
+version: '3.1'
+services:
+  web:
+    container_name: book-issuing-system-app
+    image: book-issuing-system-app
+    build: ./
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgresql
+  postgresql:
+    container_name: sample_postgres
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=ladisman1
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=library
+    ports:
+      - "5433:5433"
