@@ -31,7 +31,7 @@ public class CategoryController {
     }
 
     @GetMapping("/categories/{id}/books")
-    public ResponseEntity<Set<Book>> getBookByCategoryId(@PathVariable long id){
+    public ResponseEntity<Set<Book>> getBooksByCategoryId(@PathVariable long id){
         return new ResponseEntity<>(categoryService.getBooksByCategoryId(id),HttpStatus.OK);
     }
 
@@ -55,7 +55,7 @@ public class CategoryController {
     @DeleteMapping("/categories")
     public ResponseEntity<String> deleteAllCategories(){
         categoryService.deleteAllCategories();
-        return new ResponseEntity<>("All category deleted",HttpStatus.OK);
+        return new ResponseEntity<>("All categories deleted",HttpStatus.OK);
     }
 
 }
