@@ -20,10 +20,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -89,18 +86,16 @@ public class CategoryControllerTest {
                 .id(1L)
                 .categoryName("record")
                 .build();
-
-        String content = objectWriter.writeValueAsString(record);
-        when(categoryService.createCategory(record)).thenReturn(record);
-
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/api/v3/categories")
-                .characterEncoding(Charset.defaultCharset())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(content);
-
-        mockMvc.perform(mockRequest)
-                .andExpect(status().isCreated());
+        doReturn(record).when(categoryService).createCategory(any());
+        String content = objectMapper.writeValueAsString(record);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/v3/categories")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.categoryName", is(record.getCategoryName())));
     }
 
     @Test
@@ -108,15 +103,16 @@ public class CategoryControllerTest {
         Category updatedRecord = new Category(1L, "updated", null);
         when(categoryService.createCategory(updatedRecord)).thenReturn(updatedRecord);
 
-        String updatedContent = objectWriter.writeValueAsString(updatedRecord);
-
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/api/v3/categories/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(updatedContent);
-
-        mockMvc.perform(mockRequest)
-                .andExpect(status().isOk());
+        doReturn(updatedRecord).when(categoryService).updateCategory(anyLong(),any());
+        String content = objectMapper.writeValueAsString(updatedRecord);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/api/v3/categories/1")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.categoryName", is(updatedRecord.getCategoryName())));
     }
 
     @Test
@@ -126,31 +122,38 @@ public class CategoryControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
-                .equals("category deleted");
+                .andExpect(jsonPath("$",is("category deleted")));
 
         verify(categoryService, times(1)).deleteCategory(anyLong());
     }
 
     @Test
-    public void getBookByCategoryId() throws Exception {
+    public void getBooksByCategoryId() throws Exception {
         Book b1 = Book.builder().id(1L).title("book1").description("dec1")
                 .publishDate(LocalDate.of(2022, Month.APRIL,01)).build();
+
+        Set<Book> set = new HashSet<>();
+        set.add(b1);
+        c1.setBooks(set);
+
+        doReturn(c1.getBooks()).when(categoryService).getBooksByCategoryId(anyLong());
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/v3/categories/1/books"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
-                .equals(b1);
+                .andDo(print())
+                .andExpect(jsonPath("$[0].title", is(b1.getTitle())));
     }
 
     @Test
-    public void deleteAllCategory() throws Exception {
+    public void deleteAllCategories() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/api/v3/categories")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
-                .equals("category deleted");
+                .andExpect(jsonPath("$",is("All categories deleted")));
 
         verify(categoryService, times(1)).deleteAllCategories();
     }
