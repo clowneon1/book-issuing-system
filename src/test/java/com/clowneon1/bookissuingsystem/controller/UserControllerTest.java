@@ -34,7 +34,6 @@ class UserControllerTest {
     private MockMvc mockMvc;
 
     ObjectMapper objectMapper = new ObjectMapper();
-    ObjectWriter objectWriter = objectMapper.writer();
     
     @Mock
     UserService userService;
@@ -84,18 +83,16 @@ class UserControllerTest {
 
         User record = User.builder().id(4L).fullName("yash").email("yash@gmail.com").phoneNo("+91 2323232323").build();
 
-        String content = objectWriter.writeValueAsString(record);
-
-        when(userService.createUser(record)).thenReturn(record);
-
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/api/v3/users")
-                .characterEncoding(Charset.defaultCharset())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(content);
-
-        mockMvc.perform(mockRequest)
-                .andExpect(status().isCreated());
+        doReturn(record).when(userService).createUser(any());
+        String content = objectMapper.writeValueAsString(record);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/v3/users")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.fullName", is(record.getFullName())));
     }
 
     @Test
@@ -103,18 +100,16 @@ class UserControllerTest {
 
         User record = User.builder().id(1L).fullName("yash").email("yash@gmail.com").phoneNo("+91 2323232323").build();
 
-        String content = objectWriter.writeValueAsString(record);
-
-        when(userService.updateUser(1L,record)).thenReturn(record);
-
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/api/v3/users/1")
-                .characterEncoding(Charset.defaultCharset())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(content);
-
-        mockMvc.perform(mockRequest)
-                .andExpect(status().isOk());
+        doReturn(record).when(userService).updateUser(anyLong(),any());
+        String content = objectMapper.writeValueAsString(record);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/api/v3/users/1")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.fullName", is(record.getFullName())));
     }
 
     @Test
@@ -123,7 +118,7 @@ class UserControllerTest {
 
         fields.put("firstName", "yash");
 
-        String content = objectWriter.writeValueAsString(fields);
+        String content = objectMapper.writeValueAsString(fields);
 
         when(userService.patchUser(1L,fields)).thenReturn(u1);
 
@@ -147,7 +142,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
-                .equals("user deleted");
+                .andExpect(jsonPath("$", is("User deleted")));
 
         verify(userService, times(1)).deleteUser(anyLong());
     }
@@ -159,7 +154,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
-                .equals("All users deleted");
+                .andExpect(jsonPath("$", is("All users deleted")));
 
         verify(userService, times(1)).deleteAllUsers();
     }
