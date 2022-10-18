@@ -85,18 +85,16 @@ public class SectionControllerTest {
     public void createSection() throws Exception {
         Section record = Section.builder().id(4L).sectionName("section4").build();
 
-        String content = objectWriter.writeValueAsString(record);
-
-        when(sectionService.createSection(record)).thenReturn(record);
-
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.post("/api/v3/sections")
-                .characterEncoding(Charset.defaultCharset())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(content);
-
-        mockMvc.perform(mockRequest)
-                .andExpect(status().isCreated());
+        doReturn(record).when(sectionService).createSection(any());
+        String content = objectMapper.writeValueAsString(record);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/v3/sections")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.sectionName", is(record.getSectionName())));
 
     }
 
@@ -104,18 +102,16 @@ public class SectionControllerTest {
     public void updateSection() throws Exception {
         Section record = Section.builder().id(1L).sectionName("sectionx").build();
 
-        String content = objectWriter.writeValueAsString(record);
-
-        when(sectionService.updateSection(1L,record)).thenReturn(record);
-
-        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/api/v3/sections/1")
-                .characterEncoding(Charset.defaultCharset())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(content);
-
-        mockMvc.perform(mockRequest)
-                .andExpect(status().isOk());
+        doReturn(record).when(sectionService).updateSection(anyLong(),any());
+        String content = objectMapper.writeValueAsString(record);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/api/v3/sections/1")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(content))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.sectionName", is(record.getSectionName())));
     }
 
     @Test
@@ -125,7 +121,7 @@ public class SectionControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
-                .equals("section deleted");
+                .andExpect(jsonPath("$", is("Section deleted")));
 
         verify(sectionService, times(1)).deleteSection(anyLong());
     }
@@ -138,7 +134,7 @@ public class SectionControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
-                .equals("All sections deleted");
+                .andExpect(jsonPath("$", is("All Sections deleted")));
 
         verify(sectionService, times(1)).deleteAllSection();
     }
