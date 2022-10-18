@@ -35,7 +35,6 @@ public class CategoryControllerTest {
     private MockMvc mockMvc;
 
     ObjectMapper objectMapper = new ObjectMapper();
-    ObjectWriter objectWriter = objectMapper.writer();
 
     @Mock
     private CategoryService categoryService;

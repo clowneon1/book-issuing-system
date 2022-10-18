@@ -34,7 +34,6 @@ public class SectionControllerTest {
     private MockMvc mockMvc;
 
     ObjectMapper objectMapper = new ObjectMapper();
-    ObjectWriter objectWriter = objectMapper.writer();
 
 
     @Mock
