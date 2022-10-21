@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: book-issuing-system-app
+  name: book-issuing-system-app
+spec:
+  ports:
+    - name: book-issuing-system-app
+      port: 8080
+      protocol: TCP
+  selector:
+    app: book-issuing-system-app
+  type: LoadBalancer

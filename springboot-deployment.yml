@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-issuing-system-app
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: book-issuing-system-app
+  replicas: 1
+  template:
+    metadata:
+      name: book-issuing-system-app
+      labels:
+        app: book-issuing-system-app
+    spec:
+      containers:
+      - name: book-issuing-system-app
+        env:
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                 name: postgres-secrets
+                 key: username
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                 name: postgres-secrets
+                 key: password
+          - name: POSTGRES_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: hostname-config
+                key: postgres_host
+        image: clowneon1/book-issuing-system-app
+        imagePullPolicy: "Always"
